@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
 
 
-class PharmacyRepositoryTest extends AbstractIntegrationContainerBaseTest {
+// 이거는 도커로 테스트하기 때문에 테스트할때는 도커를 켜놓고 해야한다
+// 도커를 안키고 테스트하면 에러가 작렬한다
+class PharmacyRepositoryTest extends AbstractIntegrationContainerBaseTest { 
+    
 
     @Autowired
     PharmacyRepository pharmacyRepository
