@@ -15,7 +15,7 @@ import javax.persistence.Id;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Pharmacy  {
+public class Pharmacy  { //이거는 [] 이렇게 감싸져있는 리스트이다
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

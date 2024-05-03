@@ -5,7 +5,7 @@ import org.testcontainers.containers.GenericContainer
 import spock.lang.Specification
 
 @SpringBootTest
-abstract class AbstractIntegrationContainerBaseTest extends Specification {
+abstract class AbstractIntegrationContainerBaseTest extends Specification { //통합테스트를 위해 만든 가상 컨테이너
 
     static final GenericContainer MY_REDIS_CONTAINER
 
