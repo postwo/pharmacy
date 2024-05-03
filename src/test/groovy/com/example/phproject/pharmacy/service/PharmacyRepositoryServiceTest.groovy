@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
+import java.time.LocalDateTime
+
 //@Transactional
 class PharmacyRepositoryServiceTest extends AbstractIntegrationContainerBaseTest{ //통합테스트
 
@@ -64,5 +66,7 @@ class PharmacyRepositoryServiceTest extends AbstractIntegrationContainerBaseTest
         then:
         result.get(0).getPharmacyAddress() == address //변경되지 않는주소
     }
+
+
 
 }
