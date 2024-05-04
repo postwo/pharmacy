@@ -2,6 +2,7 @@ package com.example.phproject.direction.service;
 
 import com.example.phproject.api.dto.DocumentDto;
 import com.example.phproject.direction.entity.Direction;
+import com.example.phproject.direction.repository.DirectionRepository;
 import com.example.phproject.pharmacy.dto.PharmacyDto;
 import com.example.phproject.pharmacy.repository.PharmacyRepository;
 import com.example.phproject.pharmacy.service.PharmacySearchService;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.engine.internal.NaturalIdXrefDelegate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,6 +25,13 @@ public class DirectionService {
    private static final double RADIUS_KH= 10.0; //반경 10km
 
     private final PharmacySearchService pharmacySearchService;
+    private final DirectionRepository directionRepository;
+
+    @Transactional //데이터 변경이 있기 때문에 트랜잭션 처리
+    public List<Direction> saveAll(List<Direction> directionList){
+        if (CollectionUtils.isEmpty(directionList)) return Collections.emptyList();
+        return directionRepository.saveAll(directionList);
+    }
 
     public List<Direction> buildDirectionList(DocumentDto documentDto) {//최대3개 까지 반환
 

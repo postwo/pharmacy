@@ -45,8 +45,8 @@ class KakaoAddressSearchServiceRetryTest extends AbstractIntegrationContainerBas
         def uri = mockWebServer.url("/").uri()
 
         when:
-        mockWebServer.enqueue(new MockResponse().setResponseCode(504))
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200)
+        mockWebServer.enqueue(new MockResponse().setResponseCode(504)) //첫번째 호출 했을때는 504에러
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200) // 두번째는 정상적으로 처리
                 .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .setBody(mapper.writeValueAsString(expectedResponse)))
 
@@ -57,7 +57,7 @@ class KakaoAddressSearchServiceRetryTest extends AbstractIntegrationContainerBas
         2 * kakaoUriBuilderService.buildUriByAddressSearch(inputAddress) >> uri
         takeRequest.getMethod() == "GET"
         kakaoApiResult.getDocumentList().size() == 1
-        kakaoApiResult.getMetaDto().totalCount == 1
+        kakaoApiResult.getMetaDto().totalcount == 1
         kakaoApiResult.getDocumentList().get(0).getAddressName() == inputAddress
 
     }
