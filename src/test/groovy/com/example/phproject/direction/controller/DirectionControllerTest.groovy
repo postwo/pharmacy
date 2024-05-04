@@ -20,8 +20,8 @@ class DirectionControllerTest extends Specification {
     private DirectionService directionService = Mock()
 
     def setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new DirectionController(directionService))
-                .build()
+        mockMvc = MockMvcBuilders.standaloneSetup(new DirectionController(directionService)) 
+                .build() //빌드꼭 추가해주기
     }
 
     def "GET /dir/{encodedId}"() {

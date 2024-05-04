@@ -1,27 +1,25 @@
 package com.example.phproject.direction.service
 
 import com.example.phproject.api.dto.DocumentDto
+import com.example.phproject.api.service.KakaoCategorySearchService
+import com.example.phproject.direction.repository.DirectionRepository
 import com.example.phproject.pharmacy.dto.PharmacyDto
 import com.example.phproject.pharmacy.service.PharmacySearchService
 import spock.lang.Specification
 import spock.lang.Subject
 
+class DirectionServiceTest extends Specification {
 
-class DirectionServiceTest extends Specification { //여기는 통합테스트가 아니라 단위테스트
-
-    //mock 객체 생성
     private PharmacySearchService pharmacySearchService = Mock()
     private DirectionRepository directionRepository = Mock()
     private Base62Service base62Service = Mock()
 
     private KakaoCategorySearchService kakaoCategorySearchService = Mock()
 
-
     @Subject
     private DirectionService directionService = new DirectionService(
             pharmacySearchService, directionRepository,
-            base62Service, kakaoCategorySearchService)
-
+            base62Service, kakaoCategorySearchService) // 이거 꼭 DirectionService 에서 final로 선언한 필드하고 순서 맞추기
 
     private List<PharmacyDto> pharmacyList
 
@@ -75,7 +73,7 @@ class DirectionServiceTest extends Specification { //여기는 통합테스트�
                 .build()
 
         when:
-        pharmacySearchService.searchPharmacyDtoList() >> pharmacyList //pharmacyList를 리턴을 해라
+        pharmacySearchService.searchPharmacyDtoList() >> pharmacyList
 
         def results = directionService.buildDirectionList(documentDto)
         then:
@@ -118,5 +116,4 @@ class DirectionServiceTest extends Specification { //여기는 통합테스트�
         results.get(0).targetPharmacyName == "호수온누리약국"
         results.get(1).targetPharmacyName == "돌곶이온누리약국"
     }
-
 }

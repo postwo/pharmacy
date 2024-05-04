@@ -29,8 +29,9 @@ public class DirectionService {
 
     private final PharmacySearchService pharmacySearchService;
     private final DirectionRepository directionRepository;
-    private final KakaoCategorySearchService kakaoCategorySearchService;
     private final Base62Service base62Service;
+
+    private final KakaoCategorySearchService kakaoCategorySearchService;
 
     @Transactional //데이터 변경이 있기 때문에 트랜잭션 처리
     public List<Direction> saveAll(List<Direction> directionList){
@@ -120,7 +121,7 @@ public class DirectionService {
     // Haversine formula 예시 보기
     //double lat1, double lon1 고객의 위도 경도 주소이다
     //double lat2, double lon2 약국의 위도 경도 주소이다
-    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         lat1 = Math.toRadians(lat1);
         lon1 = Math.toRadians(lon1);
         lat2 = Math.toRadians(lat2);
