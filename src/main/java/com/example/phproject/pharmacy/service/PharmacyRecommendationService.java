@@ -5,9 +5,11 @@ import com.example.phproject.api.dto.KakaoApiResponseDto;
 import com.example.phproject.api.service.KakaoAddressSearchService;
 import com.example.phproject.direction.dto.OutputDto;
 import com.example.phproject.direction.entity.Direction;
+import com.example.phproject.direction.service.Base62Service;
 import com.example.phproject.direction.service.DirectionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -21,10 +23,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PharmacyRecommendationService {
 
+
+    private static final String ROAD_VIEW_BASE_URL = "https://map.kakao.com/link/roadview/";
+
     private final KakaoAddressSearchService kakaoAddressSearchService;
     private final DirectionService directionService;
 
+    private final Base62Service base62Service;
 
+    @Value("${pharmacy.recommendation.base.url}")
+    private String baseUrl;
 
 
     public List<OutputDto> recomendPharmacyList(String address){
@@ -38,8 +46,11 @@ public class PharmacyRecommendationService {
         }
             DocumentDto documentDto = kakaoApiResponseDto.getDocumentList().get(0);
 
-            //List<Direction> directionList = directionService.buildDirectionList(documentDto);
-            List<Direction> directionList = directionService.buildDirectionListByCategoryApi(documentDto);
+            //공공기관 약국 데이터 및 거리계산 알고리즘 이용
+            List<Direction> directionList = directionService.buildDirectionList(documentDto);
+
+            //kakao 카테고리를 이용한 장소 검색 api 이용
+            //List<Direction> directionList = directionService.buildDirectionListByCategoryApi(documentDto);
 
             return directionService.saveAll(directionList)
                     .stream()
@@ -47,6 +58,9 @@ public class PharmacyRecommendationService {
                     .collect(Collectors.toList());
         }
 
+
+
+    //direction 엔티티를 outputdto로 변환
         private OutputDto convertToOutputDto(Direction direction) {
 
             return OutputDto.builder()
@@ -58,4 +72,4 @@ public class PharmacyRecommendationService {
                     .build();
         }
     }
-}
+

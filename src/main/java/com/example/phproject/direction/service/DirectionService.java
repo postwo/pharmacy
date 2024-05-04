@@ -13,6 +13,7 @@ import org.hibernate.engine.internal.NaturalIdXrefDelegate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,16 +25,32 @@ public class DirectionService {
 
    private static final int MAX_SEARCH_COUNT= 3; // 약국 최대 검색 갯수 3개
    private static final double RADIUS_KH= 10.0; //반경 10km
-
+     private static final String DIRECTION_BASE_URL = "https://map.kakao.com/link/map/";
 
     private final PharmacySearchService pharmacySearchService;
     private final DirectionRepository directionRepository;
     private final KakaoCategorySearchService kakaoCategorySearchService;
+    private final Base62Service base62Service;
 
     @Transactional //데이터 변경이 있기 때문에 트랜잭션 처리
     public List<Direction> saveAll(List<Direction> directionList){
         if (CollectionUtils.isEmpty(directionList)) return Collections.emptyList();
         return directionRepository.saveAll(directionList);
+    }
+
+
+    @Transactional(readOnly = true)
+    public String findDirectionUrlById(String encodedId) {
+
+        Long decodedId = base62Service.decodeDirectionId(encodedId);
+        Direction direction = directionRepository.findById(decodedId).orElse(null);//findby가 optional이어서 orelse를 넣어준거다
+
+        String params = String.join(",", direction.getTargetPharmacyName(),
+                String.valueOf(direction.getTargetLatitude()), String.valueOf(direction.getTargetLongitude()));
+        String result = UriComponentsBuilder.fromHttpUrl(DIRECTION_BASE_URL + params)
+                .toUriString();
+
+        return result;
     }
 
     public List<Direction> buildDirectionList(DocumentDto documentDto) {//최대3개 까지 반환
