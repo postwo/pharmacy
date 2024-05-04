@@ -12,7 +12,7 @@ public class KakaoUriBuilderService {
 
     private static final String KAKAO_LOCAL_SEARCH_ADDRESS_URL = "https://dapi.kakao.com/v2/local/search/address.json";
 
-
+    //카테고리로 호출
     private static final String KAKAO_LOCAL_CATEGORY_SEARCH_URL = "https://dapi.kakao.com/v2/local/search/category.json";
 
     public URI buildUriByAddressSearch(String address){
@@ -34,7 +34,7 @@ public class KakaoUriBuilderService {
         uriBuilder.queryParam("category_group_code", category);
         uriBuilder.queryParam("x", longitude);
         uriBuilder.queryParam("y", latitude);
-        uriBuilder.queryParam("radius", meterRadius);
+        uriBuilder.queryParam("radius", meterRadius); //반경은 m단위이다
         uriBuilder.queryParam("sort","distance"); //위도 경도 기준으로 가까운곳을 찾는다
 
         URI uri = uriBuilder.build().encode().toUri();
