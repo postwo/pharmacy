@@ -59,9 +59,9 @@
         document.getElementById("address_kakao").addEventListener("click", function(){
 
             new daum.Postcode({
-                oncomplete: function(data) {
-                    document.getElementById("address_kakao").value = data.address;
-                }
+                oncomplete: function(data) { //선택한 주소
+                    document.getElementById("address_kakao").value = data.address; //<input> 태그에 address_kakao선택한 데이터가 들어간다
+                            }
             }).open();
         });
     }
