@@ -10,63 +10,108 @@ import spock.lang.Specification
 import java.time.LocalDateTime
 
 //@Transactional
-class PharmacyRepositoryServiceTest extends AbstractIntegrationContainerBaseTest{ //통합테스트
+class PharmacyRepositoryServiceTest extends AbstractIntegrationContainerBaseTest {
 
     @Autowired
-    private PharmacyRepositoryService pharmacyRepositoryService;
+    private PharmacyRepositoryService pharmacyRepositoryService
 
     @Autowired
-    private PharmacyRepository pharmacyRepository;
+    PharmacyRepository pharmacyRepository
 
-    //테스트를 시작하면 데이터베이스 테이터를 지우기 위해 생성
-    def setup(){
+    void setup() {
         pharmacyRepository.deleteAll()
     }
 
-    def "PharmacyRepository update - dirty checking success"(){
+    def "PharmacyRepository update - dirty checking success"() {
+
         given:
-        String address = "서울 특별시 성북구 종암동"
-        String modifiedAddress = "서울 광진구 구의동" // 변경할 주소
+        String inputAddress = "서울 특별시 성북구 종암동"
+        String modifiedAddress = "서울 광진구 구의동"
         String name = "은혜 약국"
 
         def pharmacy = Pharmacy.builder()
-                .pharmacyAddress(address)
+                .pharmacyAddress(inputAddress)
                 .pharmacyName(name)
                 .build()
-
         when:
-        def entity=  pharmacyRepository.save(pharmacy)
+        def entity = pharmacyRepository.save(pharmacy)
         pharmacyRepositoryService.updateAddress(entity.getId(), modifiedAddress)
 
-       def result = pharmacyRepository.findAll()
+        def result = pharmacyRepository.findAll()
 
         then:
-       result.get(0).getPharmacyAddress() == modifiedAddress //주소변경 검사
+        result.get(0).getPharmacyAddress() == modifiedAddress
     }
 
+    def "PharmacyRepository update - dirty checking fail"() {
 
-    //트랜잭션이 없는 메소드
-    def "PharmacyRepository update - dirty checking fail"(){
         given:
-        String address = "서울 특별시 성북구 종암동"
-        String modifiedAddress = "서울 광진구 구의동" // 변경할 주소
+        String inputAddress = "서울 특별시 성북구 종암동"
+        String modifiedAddress = "서울 광진구 구의동"
         String name = "은혜 약국"
 
         def pharmacy = Pharmacy.builder()
-                .pharmacyAddress(address)
+                .pharmacyAddress(inputAddress)
                 .pharmacyName(name)
                 .build()
-
         when:
-        def entity=  pharmacyRepository.save(pharmacy)
+        def entity = pharmacyRepository.save(pharmacy)
         pharmacyRepositoryService.updateAddressWithoutTransaction(entity.getId(), modifiedAddress)
 
         def result = pharmacyRepository.findAll()
 
         then:
-        result.get(0).getPharmacyAddress() == address //변경되지 않는주소
+        result.get(0).getPharmacyAddress() == inputAddress
     }
 
 
+    def "self invocation"() {
 
+        given:
+        String address = "서울 특별시 성북구 종암동"
+        String name = "은혜 약국"
+        double latitude = 36.11
+        double longitude = 128.11
+
+        def pharmacy = Pharmacy.builder()
+                .pharmacyAddress(address)
+                .pharmacyName(name)
+                .latitude(latitude)
+                .longitude(longitude)
+                .build()
+
+        when:
+        pharmacyRepositoryService.bar(Arrays.asList(pharmacy))
+
+        then:
+        def e = thrown(RuntimeException.class)
+        def result = pharmacyRepositoryService.findAll()
+        result.size() == 1 // 트랜잭션이 적용되지 않는다( 롤백 적용 X )
+    }
+
+    def "transactional readOnly test"() {
+
+        given:
+        String inputAddress = "서울 특별시 성북구"
+        //String modifiedAddress = "서울 특별시 광진구"
+        String name = "은혜 약국"
+        double latitude = 36.11
+        double longitude = 128.11
+
+        def input = Pharmacy.builder()
+                .pharmacyAddress(inputAddress)
+                .pharmacyName(name)
+                .latitude(latitude)
+                .longitude(longitude)
+                .build()
+
+        when:
+        def pharmacy = pharmacyRepository.save(input)
+        pharmacyRepositoryService.startReadOnlyMethod(pharmacy.id)
+
+
+        then:
+        def result = pharmacyRepositoryService.findAll()
+        result.get(0).getPharmacyAddress() == inputAddress
+    }
 }
