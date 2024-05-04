@@ -3,6 +3,7 @@ package com.example.phproject.pharmacy.service;
 import com.example.phproject.api.dto.DocumentDto;
 import com.example.phproject.api.dto.KakaoApiResponseDto;
 import com.example.phproject.api.service.KakaoAddressSearchService;
+import com.example.phproject.direction.dto.OutputDto;
 import com.example.phproject.direction.entity.Direction;
 import com.example.phproject.direction.service.DirectionService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class PharmacyRecommendationService {
 
 
 
-    public void recomendPharmacyList(String address){
+    public List<OutputDto> recomendPharmacyList(String address){
 
        KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(address);
 
